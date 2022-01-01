@@ -11,17 +11,16 @@ int main() {
 	while (true) {
 		TicTacToe board;
 		int keyValue = 0;
-		bool gameEnd = false;
 		cout << "Welcome to Tic Tac Toe! " << endl;
 		cout << "Use the arrow keys to select a tile, and Enter to place your move." << endl;
 
-		while (!gameEnd) {
+		while (board.getCurState() == inProgress) {
 			system("CLS");
 
 			//1. Init players turn.
 			cout << board.getCurPlayer() << "'s turn: " << endl;
 			board.printBoard();
-
+			bool invalidCmd = false;
 			//2. Listen for arrow inputs and update UI to show selected tile.
 			switch ((keyValue = _getch())) {
 				case(KEY_LEFT):
@@ -42,11 +41,10 @@ int main() {
 				default:
 					break;
 			}
-			if (!board.checkEnd()) {
+			if (board.getCurState() == inProgress) {
 				board.switchPlayer();
 			}
-			else {
-				gameEnd = true;
+			else { 
 				system("CLS");
 			}
 		}

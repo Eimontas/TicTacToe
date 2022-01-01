@@ -18,13 +18,18 @@
 #include <tuple>
 
 enum UICOMMAND { moveLeft, moveRight, moveUp, moveDown, placeMove };
-
+enum CURSTATE {xWin, oWin, draw, inProgress};
 using namespace std;
 class TicTacToe {
 	char gameBoard[3][3];
 	string curPlayer;
 	char selectedTileValue;
 	tuple<int, int> selectedTile;
+	CURSTATE state;
+
+	CURSTATE checkDiagonals(char player);
+	CURSTATE checkColumns(char player);
+	CURSTATE checkRows(char player);
 
 	public:
 		TicTacToe();
@@ -33,9 +38,11 @@ class TicTacToe {
 		void setCurPlayer(string player);
 		void switchPlayer();
 		string getCurPlayer();
-		bool checkEnd();
+		CURSTATE checkEnd(int row, int col, string player);
+		CURSTATE checkWin(int row, int col, string player);
 		bool checkTie();
-
+		void setCurState(CURSTATE newState);
+		CURSTATE getCurState();
 
 };
 

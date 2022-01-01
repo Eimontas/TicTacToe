@@ -3,6 +3,7 @@
 TicTacToe::TicTacToe() {
 	//start on top left tile
 	selectedTile = {0 ,0};
+	state = inProgress;
 	//Build the board
 	for (int i = 0; i < 3; i++) {
 		for (int j = 0; j < 3; j++) {
@@ -74,7 +75,8 @@ void TicTacToe::updateTileUI(UICOMMAND cmd) {
 			}
 			selectedTile = { 0 ,0 };
 			selectedTileValue = gameBoard[get<0>(selectedTile)][get<1>(selectedTile)];
-			gameBoard[get<0>(selectedTile)][get<1>(selectedTile)] = '_';
+			state = checkEnd(get<0>(selectedTile), get<1>(selectedTile), getCurPlayer());
+			if(state == inProgress){ gameBoard[get<0>(selectedTile)][get<1>(selectedTile)] = '_'; }
 			break;
 		default:
 			cout << "Unexpected Command, please try again" << endl;
@@ -100,8 +102,89 @@ string TicTacToe::getCurPlayer() {
 	return curPlayer;
 }
 
-bool TicTacToe::checkEnd() {
-	return checkTie();
+CURSTATE TicTacToe::checkEnd(int row, int col, string player) {
+	if(!checkTie()) {
+		CURSTATE state = checkWin(row, col, player);
+		return state;
+	}
+	else{
+		return draw;
+	}
+}
+
+CURSTATE TicTacToe::checkWin(int row, int col, string player) {
+	char curPlayer = player.back();
+	CURSTATE diags = checkDiagonals(curPlayer);
+	if (diags == inProgress) {
+		CURSTATE rows = checkRows(curPlayer);
+		if (rows == inProgress) {
+			CURSTATE cols = checkColumns(curPlayer);
+			if (cols == inProgress) {
+				return inProgress;
+			}
+			else {
+				return cols;
+			}
+		}
+		else {
+			return rows;
+		}
+	}
+	else {
+		return diags;
+	}
+}
+
+CURSTATE TicTacToe::checkColumns(char player) {
+	for (int i = 0; i < 3; i++) {
+		bool colFull = true;
+		for (int j = 0; j < 3; j++) {
+			if (gameBoard[j][i] != player) {
+				colFull = false;
+			}
+		}
+		if (colFull) {
+			if (player == 'X') { return xWin; }
+			else { return oWin; }
+		}
+	}
+	return inProgress;
+}
+
+CURSTATE TicTacToe::checkRows(char player) {
+	for (int i = 0; i < 3; i++) {
+		bool rowFull = true;
+		for (int j = 0; j < 3; j++) {
+			if (gameBoard[i][j] != player) {
+				rowFull = false;
+			}
+		}
+		if (rowFull) {
+			if (player == 'X') { return xWin; }
+			else { return oWin; }
+		}
+	}
+	return inProgress;
+}
+
+CURSTATE TicTacToe::checkDiagonals(char player) {
+	//If the middle tile is not held by the player that just moved, then diagonals will always be false.
+	if (player == gameBoard[1][1]) {
+		if (player == gameBoard[0][0] && player == gameBoard[2][2]) {
+			if (player == 'X') { return xWin; }
+			else { return oWin; }
+		}
+		else if (player == gameBoard[0][2] && player == gameBoard[2][0]) {
+			if (player == 'X') { return xWin; }
+			else { return oWin; }
+		}
+		else {
+			return inProgress;
+		}
+	}
+	else {
+		return inProgress;
+	}
 }
 
 bool TicTacToe::checkTie() {
@@ -114,6 +197,17 @@ bool TicTacToe::checkTie() {
 			}
 		}
 	}
+	if (gameTie && selectedTileValue == '-') {
+		gameTie = false;
+	}
 	
 	return gameTie;
+}
+
+void TicTacToe::setCurState(CURSTATE newState) {
+	state = newState;
+}
+
+CURSTATE TicTacToe::getCurState() {
+	return state;
 }
