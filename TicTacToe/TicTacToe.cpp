@@ -82,6 +82,7 @@ void TicTacToe::updateTileUI(UICOMMAND cmd) {
 			cout << "Unexpected Command, please try again" << endl;
 			break;
 	}
+	system("CLS");
 	printBoard();
 }
 
@@ -132,6 +133,15 @@ CURSTATE TicTacToe::checkWin(int row, int col, string player) {
 	}
 	else {
 		return diags;
+	}
+}
+
+bool TicTacToe::checkValidMove() {
+	if (selectedTileValue == '-') {
+		return true;
+	}
+	else {
+		return false;
 	}
 }
 

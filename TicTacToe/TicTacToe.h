@@ -41,6 +41,7 @@ class TicTacToe {
 		CURSTATE checkEnd(int row, int col, string player);
 		CURSTATE checkWin(int row, int col, string player);
 		bool checkTie();
+		bool checkValidMove();
 		void setCurState(CURSTATE newState);
 		CURSTATE getCurState();
 

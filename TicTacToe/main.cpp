@@ -13,16 +13,18 @@ int main() {
 		TicTacToe board;
 		int keyValue = 0;
 		char playAgainChoice = 'x';
-		bool invalidMove = false;
-		cout << "Welcome to Tic Tac Toe! " << endl;
-		cout << "Use the arrow keys to select a tile, and Enter to place your move." << endl;
-
+		bool prevMoveInvalid = false;
+		
 		while (board.getCurState() == inProgress) {
-			system("CLS");
+			cout << "Welcome to Tic Tac Toe! " << endl;
+			cout << "Use the arrow keys to select a tile, and Enter to place your move." << endl;
 
+			if(prevMoveInvalid){ cout << "Invalid Move! Try Again: " << endl; }
 			//1. Init players turn, and refresh the board state.
 			cout << board.getCurPlayer() << "'s turn: " << endl;
 			board.printBoard();
+
+			bool validMove = board.checkValidMove();
 			//2. Listen for arrow inputs and update UI to show selected tile.
 			switch ((keyValue = _getch())) {
 				case(KEY_LEFT):
@@ -38,16 +40,23 @@ int main() {
 					board.updateTileUI(moveDown);
 					break;
 				case(KEY_ENTER):
-					board.updateTileUI(placeMove);
+					if (validMove) {
+						board.updateTileUI(placeMove);
+						if (prevMoveInvalid) { prevMoveInvalid = false; }
+					}
+					else {
+						prevMoveInvalid = true;
+					}
+					
 					break;
 				default:
 					break;
 			}
 			CURSTATE state = board.getCurState();
-			if (state == inProgress) {
+			if (state == inProgress && validMove) {
 				board.switchPlayer();
 			}
-			else { 
+			else if(state != inProgress){ 
 				switch (state) {
 				case(draw):
 					cout << "It's a draw!" << endl;
@@ -69,6 +78,7 @@ int main() {
 					playAgainChoice != 'y' && playAgainChoice != 'n'
 					);
 			}
+			system("CLS");
 
 		}
 		if (playAgainChoice == 'N' || playAgainChoice == 'n') {
